@@ -1,0 +1,91 @@
+BASIC Stamp I Instruction Set
+July 26, 1995
+
+
+BRANCHING ---------------------------------------------------------------------
+
+     IF...THEN   Compare and conditionally branch.
+     BRANCH      Branch to address specified by offset.
+     GOTO        Branch to address.
+     GOSUB       Branch to subroutine at address.
+     RETURN      Return from subroutine.
+
+LOOPING -----------------------------------------------------------------------
+
+     FOR...NEXT  Establish a FOR-NEXT loop.
+
+NUMERICS ----------------------------------------------------------------------
+
+     LOOKUP      Lookup data specified by offset and store in variable. This
+                 instruction provides a means to make a lookup table.
+
+     LOOKDOWN    Find target match number (0-N) and store in variable.
+     RANDOM      Generate a pseudo-random number.
+
+DIGITAL I/O -------------------------------------------------------------------
+
+     INPUT       Make pin an input
+     OUTPUT      Make pin an output.
+
+     REVERSE     If pin is an output, make it an input. If pin is an input,
+                 make it an output.
+
+     LOW         Make pin output low.
+     HIGH        Make pin output high.
+     TOGGLE      Make pin an output and toggle state.
+     PULSIN      Measure an input pulse (resolution of 10 us).
+
+     PULSOUT     Output a timed pulse by inverting a pin for some time
+                 (resolution of 10 us).
+
+     BUTTON      Debounce button, perform auto-repeat, and branch to address if
+                 button is in target state.
+
+SERIAL I/O --------------------------------------------------------------------
+
+     SERIN       Serial input with optional qualifiers. If qualifiers are
+                 given, then the instruction will wait until they are received
+                 before filling variables or continuing to the next
+                 instruction. Baud rates of 300, 600, 1200, and 2400 are
+                 possible. Data received must be N81 (no parity, 8 data bits,
+                 1 stop bit).
+
+     SEROUT      Send data serially. Baud rates of 300, 600, 1200, and 2400 are
+                 possible. Data is sent as N81 (no parity, 8 data bits, 1 stop
+                 bit).
+
+ANALOG I/O --------------------------------------------------------------------
+
+     PWM         Output PWM, then return pin to input. This can be used to
+                 output analog voltages (0-5V) using a capacitor and resistor.
+
+     POT         Measure a potentiometer by charging through a capacitor.
+
+SOUND -------------------------------------------------------------------------
+
+     SOUND       Generate tones on a speaker.
+
+EEPROM ACCESS -----------------------------------------------------------------
+
+     EEPROM      Store data in EEPROM before downloading BASIC program.
+     READ        Read EEPROM byte into variable.
+     WRITE       Write byte into EEPROM.
+
+TIME --------------------------------------------------------------------------
+
+     PAUSE       Pause execution for 0-65535 milliseconds.
+
+POWER CONTROL -----------------------------------------------------------------
+
+     NAP         Nap for a short period. Power consumption is reduced.
+	
+     SLEEP       Sleep for 1-65535 seconds. Power consumption is reduced to
+                 approximately 20 uA.
+
+     END         Sleep until the power cycles or the PC connects. Power
+                 consumption is reduced to approximately 20 uA.
+
+PROGRAM DEBUGGING -------------------------------------------------------------
+
+     DEBUG       Send variables to PC for viewing.
+

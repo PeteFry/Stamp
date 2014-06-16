@@ -1,0 +1,26 @@
+BSLOAD Instructions
+-------------------------------------------------------------------------------
+
+BSLOAD downloads 'object' files to the BASIC Stamp, without requiring source
+code.  This facilitates field upgrades to Stamp-based products.  Your customer
+needs a Stamp cable, the BSLOAD.EXE program, and any .OBJ files which you wish
+to supply.
+
+Here's how it works:
+
+	Within your BASIC source code, put BSAVE somewhere.  It is a command
+	which doesn't require any arguments.  When you do an ALT-R, a binary
+	file named CODE.OBJ gets saved.  This file is the 256-byte binary
+	picture of the Stamp's EEPROM.  You will then want to rename the file
+	in DOS to some other appropriate name, like maybe 'RELAY.OBJ'.  Keep
+	the .OBJ extension, since the downloader assumes this automatically if
+	nothing else is given.
+
+	Once an .OBJ file is made, it can be downloaded to a Stamp via DOS by
+	typing BSLOAD {filename}.  The file will be downloaded to the Stamp,
+	and it runs as normal.  You may wish to make a batch file which
+	invokes BSLOAD, after prompting the user to connect the Stamp, etc.
+
+
+				The End
+

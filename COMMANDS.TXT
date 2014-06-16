@@ -1,0 +1,769 @@
++---------------------------------------------------------------+
+ Ý								Ý Ý		BASIC Stamp I - Instruction List		Ý Ý								Ý
+Ý		  (C) 1993 by Parallax, Inc.			Ý Ý								Ý
++---------------------------------------------------------------+
+
+When a program is first run, all variables are cleared to 0. 
+The variables total to 16 bytes of RAM and are arranged as
+follows:
+
+Data		Words	Bytes	Bits-------------------------------------------
+-----------------------------------
+
+0000 0000	PORT	PINS	PIN0 - PIN7  (PINS.0, PORT.0 - PINS.7,
+PORT.7)
+
+0000 0000		DIRS	DIR0 - DIR7  (DIRS.0, PORT.8 - DIRS.7, PORT.15)
+
+0000 0000	W0	B0  	BIT0 - BIT7  (B0.0, W0.0 - B0.7, W0.7) 
+
+0000 0000		B1  	BIT8 - BIT15 (B1.0, W0.8 - B1.7, W0.15)
+
+0000 0000	W1	B2 0000 0000		B3
+
+0000 0000	W2	B4 0000 0000		B5
+
+0000 0000	W3	B6 0000 0000		B7
+
+0000 0000	W4	B8 0000 0000		B9
+
+0000 0000	W5	B10 0000 0000	B11
+
+0000 0000	W6	B12 0000 0000	B13
+
+PORT is the I/O port word:
+
+	PINS and PIN0-PIN7 are the port (RB) pins (buffered to overcome
+the
+
+read-modify-write problem).  When these variables are read, RB
+is read
+
+directly.  When these variables are written to, the
+corresponding RAM
+
+is written to, which is then transferred to RB before each
+instruction.
+
+	DIRS and DIR0-DIR7 are the port (RB) direction bits: 0=input,
+1=output
+
+(buffered to overcome the write-only nature of the TRIS
+registers).
+
+This byte of data is transfered to !RB before each instruction.
+
+W0-W6, B0-B13, and BIT0-BIT15 are for general-purpose use.
+
+W6 (B12,B13) is used as a four-level stack if any GOSUB/RETURNs
+are executed.
+
+-----------------------------------------------------------------
+--------------
+
+ANALOG			8-bit resolution I/O via resistor-capacitor
+circuits---------------------------------------------------------
+----------------------
+
+
+
+PWM  pin,duty,cycles
+
+	Output pwm then return pin to input.  This is used to output
+analog
+
+voltages (0-5V) via a pin connected to a resistor connected to a
+cap
+
+connected to ground; the resistor-cap junction being the analog
+output.
+
+PWM should be executed periodically to update/refresh the analog
+
+voltage.
+
+	- Pin is a variable/constant (0-7) which specifies the i/o pin
+to use.
+
+- Duty is a variable/constant (0-255) which specifies analog
+level.
+
+- Cycles is a variable/constant (0-255) which specifies number of
+
+  cycles.  Each cycle takes about 5ms.
+
+ POT  pin,scale,variable
+
+	Digitize a 5-50K ohm pot with a .1uf cap and scale result. 
+This is a
+
+method of analog input via a pin.  The pin must connect to the
+center-
+
+tap of the pot, whose side tap connects to the cap which
+connects to
+
+ground.  Use the 'Alt-P' command to determine the scale, while
+the
+
+stamp is connected and the pot circuit is in place.
+
+	- Pin is a variable/constant (0-7) which specifies the i/o pin
+to use.
+
+- Scale is a constant (0-255) which is used to scale the initial
+result
+
+  by n/256 (result is then limited to 255).
+
+- Variable receives the result (0-255).
+
+-----------------------------------------------------------------
+--------------
+
+SOUND			Direct audio output using a cap and high-z
+speaker----------------------------------------------------------
+---------------------
+
+
+
+SOUND  pin,(note,duration,note,duration...)
+
+	Play notes with durations.  The pin must connect to the plus
+side of a
+
+=> 10uf cap whose minus side connects to a => 40 ohm (or peizo)
+speaker
+
+whose other terminal connects to ground.
+
+	- Pin is a variable/constant (0-7) which specifies the i/o pin
+to use.
+
+- Note(s) are variables/constants (0-255) which specify type and
+
+  frequency.  Note 0 is silent for the duration.  Notes 1-127 are
+
+  ascending tones.  Notes 128-255 are ascending white noises.
+
+- Duration(s) are variables/constants (0-255) which specify
+duration.
+
+-----------------------------------------------------------------
+--------------
+
+SERIAL			Input and output, plus networking via
+open-drain/source------------------------------------------------
+-------------------------------
+
+
+
+SERIN  pin,baudmode,(qualifier,qualifier...) SERIN 
+pin,baudmode,(qualifier,qualifier...),{#}variable,{#}variable...
+SERIN  pin,baudmode,{#}variable,{#}variable...
+
+	Serial input with optional qualifiers (8 data, no parity, 1
+stop).
+
+	- Pin is a variable/constant (0-7) which specifies the i/o pin
+to use.
+
+- Baudmode is a variable/constant (0-7) which specifies the mode:
+
+	T2400		true input
+
+	T1200		true input
+
+	T600		true input
+
+	T300		true input
+
+	N2400		inverted input
+
+	N1200		inverted input
+
+	N600		inverted input
+
+	N300		inverted input
+
+- Qualifiers are optional variables/constants (0-255) which must
+be
+
+  received in exact order before subsequent bytes can be
+received and
+
+  stored in variables.
+
+- Variable(s) receive the result(s) (0-255).  Optional #'s are
+for
+
+  inputting ascii decimal numbers into variables, rather than raw
+
+  characters.
+
+ SEROUT  pin,baudmode,({#}data,{#}data...)
+
+	Serial output (8 data, no parity, 1 stop).
+
+	- Pin is a variable/constant (0-7) which specifies the i/o pin
+to use.
+
+- Baudmode is a variable/constant (0-15) which specifies the
+mode:
+
+	T2400		true output		always driven
+
+	T1200		true output		always driven
+
+	T600		true output		always driven
+
+	T300		true output		always driven
+
+	N2400		inverted output		always driven
+
+	N1200		inverted output		always driven
+
+	N600		inverted output		always driven
+
+	N300		inverted output		always driven
+
+	OT2400		true output		open-drain
+
+	OT1200		true output		open-drain
+
+	OT600		true output		open-drain
+
+	OT300		true output		open-drain
+
+	ON2400		inverted output		open-source
+
+	ON1200		inverted output		open-source
+
+	ON600		inverted output		open-source
+
+	ON300		inverted output		open-source
+
+- Data are variables/constants (0-255) which provide the data to
+be
+
+  output.  Optional #'s are for outputting ascii decimal numbers,
+
+  rather than raw characters.
+
+-----------------------------------------------------------------
+--------------
+
+DIGITAL
+OUTPUT-----------------------------------------------------------
+--------------------
+
+
+
+OUTPUT  pin
+
+	Make pin output.
+
+	- Pin is a variable/constant (0-7) which specifies the i/o pin
+to use.
+
+ LOW  pin
+
+	Make pin output low.
+
+	- Pin is a variable/constant (0-7) which specifies the i/o pin
+to use.
+
+ HIGH  pin
+
+	Make pin output high.
+
+	- Pin is a variable/constant (0-7) which specifies the i/o pin
+to use.
+
+ TOGGLE  pin
+
+	Make pin output and toggle state.
+
+	- Pin is a variable/constant (0-7) which specifies the i/o pin
+to use.
+
+ REVERSE  pin
+
+	Reverse the direction of a pin.
+
+	- Pin is a variable/constant (0-7) which specifies the i/o pin
+to use.
+
+ PULSOUT  pin,time
+
+	Output a timed pulse by inverting a pin for some time.
+
+	- Pin is a variable/constant (0-7) which specifies the i/o pin
+to use.
+
+- Time is a variable/constant which specifies the period
+(0-65535) in
+
+  10us units.
+
+-----------------------------------------------------------------
+--------------
+
+DIGITAL
+INPUT------------------------------------------------------------
+-------------------
+
+
+
+INPUT  pin
+
+	Make pin an input
+
+	- Pin is a variable/constant (0-7) which specifies the i/o pin
+to use.
+
+ PULSIN  pin,state,variable
+
+	Measure an input pulse.
+
+	- Pin is a variable/constant (0-7) which specifies the i/o pin
+to use.
+
+- State is a variable/constant (0 or 1) which specifies which
+edge must
+
+  occur before beginning the measurement in 10us units.
+
+- Variable receives the result (1-65536).  If timeout occurs
+(.65536s)
+
+  the result will be 0.
+
+ BUTTON 
+pin,downstate,delay,rate,bytevariable,targetstate,address
+
+	Debounce button, auto-repeat, and branch if button is in target
+state.
+
+	- Pin is a variable/constant (0-7) which specifies the i/o pin
+to use.
+
+- Downstate is a variable/constant (0 or 1) which specifies what
+
+  logical state is read when the button is pressed.
+
+- Delay is a variable/constant (0-255) which specifies down-time
+before
+
+  auto-repeat in BUTTON cycles.
+
+- Rate is a variable/constant (0-255) which specifies the
+auto-repeat
+
+  rate in BUTTON cycles.
+
+- Bytevariable is the workspace.  It must be cleared to 0 before
+being
+
+  used by BUTTON for the first time.
+
+- Targetstate is a variable/constant (0 or 1) which specifies
+what
+
+  state (0=not pressed, 1=pressed) the button should be in for a
+
+  branch to occur.
+
+- Address is a label which specifies where to go if the button
+is in
+
+  the target state.
+
+-----------------------------------------------------------------
+--------------
+
+EEPROM			Non-volatile data storage in unused program
+memory-----------------------------------------------------------
+--------------------
+
+
+
+READ  location,variable
+
+	Read eeprom location contents into variable.  location 255 holds
+
+highest	location minus one that is available to user for data
+storage.
+
+	- Location is a variable/constant specifying a byte-wise address
+
+  (0-255).  Data storage begins at 0 and builds upward, while
+program
+
+  space builds downward from 255.
+
+- Variable receives the data byte read.
+
+WRITE  location,data
+
+	Write data into eeprom.
+
+	- Location is a variable/constant specifying a byte-wise address
+
+  (0-255).  Data storage begins at 0 and builds upward, while
+program
+
+  space builds downward from 255.
+
+- Data is a variable/constant which provides the data byte to be
+
+  written.
+
+-----------------------------------------------------------------
+--------------
+
+TIME			Accurate-enough timer
+functions--------------------------------------------------------
+-----------------------
+
+
+
+PAUSE  milliseconds
+
+	Pause for some time.  The duration of the pause is as accurate
+as the
+
+resonator time-base, however extra time (perhaps 1ms) will be
+spent
+
+gathering and executing the adjacent instructions.  In other
+words,
+
+the higher the milliseconds, the relatively less-significant is
+the
+
+extra time.  Therefore, accurate-enough timer functions can be
+
+implemented by PAUSE'ing, say, 100 (ms), then incrementing a
+variable
+
+which counts 1/10 seconds, checking for the end-condition, and
+if not
+
+true, looping back to the PAUSE.  In the case of 100 (ms), the
+error
+
+might be +1%.  This could be remedied by reducing 100 to 99
+(based on
+
+a trial test), or increasing 100 to, say, 250, and then counting
+1/4
+
+seconds instead.
+
+	- Milliseconds is a variable/constant (0-65535) which specifies
+how
+
+  many milliseconds to pause.
+
+-----------------------------------------------------------------
+--------------
+
+NUMERICS		Math, translation, pseudo-random
+generation-------------------------------------------------------
+------------------------
+
+
+
+{LET}  variable = {-}value ?? value ...
+
+??:	+	;add
+
+-	;subtract
+
+*	;multiply (returns low word of result)
+
+**	;multiply (returns high word result)
+
+/	;divide (returns quotient)
+
+//	;divide (returns remainder)
+
+MAX	;make less than or equal to
+
+MIN	;make greater than or equal to
+
+&	;and
+
+|	;or
+
+^	;xor
+
+&/	;and not
+
+|/	;or not
+
+^/	;xor not
+
+	Perform variable manipulation (wordsize-to-wordsize).  Math is
+
+performed strictly from left to right.
+
+	- Variable will be operated on.
+
+- Value(s) are variables/constants which operate on Variable.
+
+ LOOKUP  offset,(data0,data1...dataN),variable
+
+	Lookup data specified by offset and store in variable (if in
+range).
+
+	- Variable receives the result (if any).
+
+- Offset is a variable/contant which specifies which data# (0-N)
+to
+
+  place in Variable.
+
+- Data are variables/constants.
+
+ LOOKDOWN  target,(value0,value1...valueN),variable
+
+	Get target's match number (0-N) into variable (if match found).
+
+	- Variable receives the result (if any).
+
+- Target is a variable/constant which will be compared to Values.
+
+- Values are variables/constants.
+
+ RANDOM  wordvariable
+
+	Generate next pseudo-random number in a word variable.
+
+	- Wordvariable is both the workspace and the result.
+
+-----------------------------------------------------------------
+--------------
+
+LOOPING----------------------------------------------------------
+---------------------
+
+
+
+FOR  variable = start TO end {STEP {-}increment} NEXT {variable}
+
+	Establish FOR-NEXT loop.
+
+	- Variable will be used as a counter
+
+- Start is the initial value of Variable
+
+- End is the terminal value of Variable
+
+- Increment is an optional value which overrides the default
+counter
+
+  delta of +1.  If Increment is preceeded by a '-', it will be
+assumed
+
+  that End is greater than Start, and therefore, Increment will
+be
+
+  subtracted each time through the loop rather than added
+
+-----------------------------------------------------------------
+--------------
+
+BRANCHING--------------------------------------------------------
+-----------------------
+
+
+
+IF variable ?? value {AND/OR variable ?? value ...} THEN address
+
+	?? can be =, <>, =>, =<, >, <
+
+	Compare and conditionally branch.
+
+	- Variable(s) will be compared to Value(s).
+
+- Value is a variable/constant.
+
+- Address is a label which specifies where to go if condition is
+true.
+
+ BRANCH  offset,(address0,address1...addressN)
+
+	Branch to address specified by offset (if in range).
+
+	- Offset is a variable/constant which specifies which Address#
+to use
+
+  (0-N).
+
+- Addresses are labels which specify where to go.
+
+ GOTO  address
+
+	Go to address.
+
+	- Address is a label which specifies where to go.
+
+ GOSUB  address
+
+	Go to subroutine at address.  Up to 16 GOSUBS are allowed and
+they
+
+can be nested up to 4 deep.
+
+	- Address is a label which specifies where to go.
+
+ RETURN
+
+	Return from subroutine.
+
+-----------------------------------------------------------------
+--------------
+
+POWER CONTROL		Achieves maximum battery
+life-------------------------------------------------------------
+------------------
+
+
+
+NAP  period
+
+	Nap for a short period.  Power consumption is reduced to an
+extent
+
+dependent upon the length of the period.
+
+	- Period is a variable/constant which determines the duration
+of the
+
+  reduced-power nap.  The duration will be 2^period * ~18ms. 
+Period
+
+  can range from 0 to 7.
+
+ SLEEP  seconds
+
+	Sleep for some seconds (resolution is ~2.3s, accuracy is
+~99.9%).
+
+Power consumption is reduced to 1/100th normal (assuming no
+loads are
+
+being driven).
+
+	- Seconds is a variable/constant which specifies the duration
+of sleep
+
+  in seconds (0-65535).
+
+ END
+
+	Sleep terminally until the power cycles (program re-runs) or
+the pc
+
+connects.  Power is reduced to an absolute minimum (assuming no
+loads
+
+are being driven).
+
+-----------------------------------------------------------------
+--------------
+
+DEBUGGING		Used in
+program-development----------------------------------------------
+---------------------------------
+
+
+
+DEBUG  cls,"Text",cr,var,$var,%var,#var,#$var,#%var
+
+	Display information in the debug window upon encounter during
+
+execution.
+
+	- Text to be printed can be expressed in quotes; in addition,
+'cls'
+
+  (clear screen) and 'cr' (carriage return) can be used.
+
+	- Variables can be printed with their current values by simply
+naming
+
+  the variable.  Decimal is the default, but '$' can be used for
+hex
+
+  and '%' can be used for binary.  If a '#' preceeds a variable
+(with
+
+  optional '$' or '%' in front) the variable name will not be
+printed,
+
+  instead only the value will be printed.
+
+-----------------------------------------------------------------
+--------------
+
+EEPROM			Preloads EEPROM data
+locations--------------------------------------------------------
+-----------------------
+
+
+
+EEPROM  {location},(data,data...)
+
+	Preload EEPROM data locations (those not used by the program). 
+This
+
+is not an instruction, but rather a means to preload otherwise
+cleared
+
+eeprom locations.
+
+	- Location is an optional constant (0-255) which specifies
+where to
+
+  begin storing the data in the eeprom.  If no location is
+specified,
+
+  storage continues from where it last left off.  If no location
+was
+
+  initially specified, storage begins at 0.  Data storage builds
+upward
+
+  from 0 while program storage builds downward from 255.
+
+- Data are constants (0-255) which will be stored in the eeprom.
+
+-----------------------------------------------------------------
+--------------
+
+SYMBOL			Establishes alias names for variables and
+constants--------------------------------------------------------
+-----------------------
+
+
+
+SYMBOL  symbolname = value
+
+	Assign a value to a new symbolname.
+
+	- Symbolname is a text string which must begin with an
+alpha-character
+
+  or '_'.  After the first character, it can also contains number
+
+  characters ('0'-'9').
+
+- Value is a variable or constant which is being given an
+alternate
+
+  symbolname. 
+
+

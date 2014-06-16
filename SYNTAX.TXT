@@ -1,0 +1,96 @@
+ษอออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออป
+บ								บ
+บ		BASIC Stamp I - Syntax Description		บ
+บ								บ
+บ		   (C) 1993 by Parallax, Inc.			บ
+บ								บ
+ศอออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออผ
+
+-------------------------------------------------------------------------------
+COMMENTS
+-------------------------------------------------------------------------------
+
+Comments begin with an apostrophe (') and continue until the end of the line.
+
+Example:	high 0	'make pin 0 high
+
+Of course, there's also the old REM.
+
+-------------------------------------------------------------------------------
+CONSTANTS
+-------------------------------------------------------------------------------
+
+Constants can be declared in four ways: decimal, hex, binary, and ASCII.
+Decimal numbers are typed directly, hex numbers are preceeded with a dollar-
+sign ($), binary numbers are preceeded by a percent-sign (%), and ASCII values
+are enclosed in quotes (").
+
+Examples:	100		' 100 decimal
+		$64		' 64 hex
+		%01100100	' 01100100 binary
+		"A"		' "A" ascii (65)
+		"Hello"		' "Hello" - equivalent to "H","e","l","l","o"
+
+		B1 = B0 ^ $AA	' xor B0 with AA hex
+
+-------------------------------------------------------------------------------
+VARIABLES
+-------------------------------------------------------------------------------
+
+The stamp has 16 bytes of RAM organized as 56 variables:  8 words, 16 bytes,
+and 32 bits.  The 32 bit variables cover the bottom 2 words or 4 bytes.
+
+Words:	PORT
+	W0, W1, W2, W3, W4, W5, W6
+
+Bytes:	PINS, DIRS  (together equal PORT)
+	B0, B1, B2, B3, B4, B5, B6, B7, B8, B9, B10, B11, B12, B13
+
+Bits:	PIN0, PIN1, PIN2, PIN3, PIN4, PIN5, PIN6, PIN7  (together equal PINS)
+	DIR0, DIR1, DIR2, DIR3, DIR4, DIR5, DIR6, DIR7  (together equal DIRS)
+	BIT0, BIT1, BIT2, BIT3, BIT4, BIT5, BIT6, BIT7  (together equal B0)
+	BIT8, BIT9, BIT10, BIT11, BIT12, BIT13, BIT14, BIT15  (together B1)
+
+-------------------------------------------------------------------------------
+SYMBOLS
+-------------------------------------------------------------------------------
+
+Symbols can be assigned constant values, alias names for variables, and program
+addresses.  Constant values and alias variable names are assigned by following
+the symbol name with an equal-sign (=), followed by the variable or constant.
+Program addresses are assigned by following the symbol with a colon (:).
+
+Examples:	SYMBOL NOTES = 35	'define a constant symbol
+		SYMBOL COUNTER = W0	'define a variable symbol
+		PROGRESS: GOTO PROGRESS	'address symbol end with colons
+
+
+-------------------------------------------------------------------------------
+FORMAT
+-------------------------------------------------------------------------------
+
+Case is not registered, except in the case of strings (denoted by ").
+
+BASIC commands and label declarations can be separated by colons (:) in order
+to fit multiple symbols and commands into a single line.
+
+Examples:
+
+	SYMBOL MODE = BIT0 : SYMBOL FLAG = BIT1 : SYMBOL LIMIT = 45
+
+	NOISE: RANDOM W0 : B2 = B0 & $7F : SOUND 0,(B0,7) : GOTO NOISE
+
+Usually, programs will be formatted as follows:
+
+SYMBOL ALIAS = W0 : SYMBOL DOGS = B4 : SYMBOL RELAY = 3 'Assign symbols
+
+MAIN:	PORT = %0000000011111111			'Main program
+	GOSUB SUB
+	GOTO MAIN
+
+SUB:	PULSOUT RELAY,1000 : TOGGLE 0 : RETURN		'Subroutines
+
+
+Note:	The compiler always places an END instruction after the last line of
+	a program.
+
